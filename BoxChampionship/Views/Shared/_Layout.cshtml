@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Box Championship</title>
+
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/jqueryui")
+    @Styles.Render("~/Content/jqgrid")
+
+</head>
+<body>
+    <header>
+        <span class="logo">Box Championship</span>
+        <nav>
+            <a href="@Url.Action("Index", "BattlesListView")">BattlesListView</a>
+            <a href="@Url.Action("Index", "Battles")">BattlesAdd</a>
+          
+            <a href="@Url.Action("Index", "Championship")">Championships</a>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <footer>
+        <span></span>
+    </footer>
+
+    
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqgrid")
+
+   
+    @RenderSection("Scripts", required: false)
+
+</body>
+</html>
+

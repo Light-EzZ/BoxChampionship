@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="Хранилище BoxChampionshipDBModel" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Battles">
+          <Key>
+            <PropertyRef Name="BattleId" />
+          </Key>
+          <Property Name="BattleId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Winner" Type="int" Nullable="false" />
+          <Property Name="Looser" Type="int" Nullable="false" />
+          <Property Name="ChampionshipId" Type="int" Nullable="false" />
+          <Property Name="Rounds" Type="int" Nullable="false" />
+          <Property Name="DateTime" Type="datetime" Nullable="false" />
+          <Property Name="WinnerPoints" Type="int" Nullable="false" />
+          <Property Name="LooserPoints" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Boxers">
+          <Key>
+            <PropertyRef Name="BoxerId" />
+          </Key>
+          <Property Name="BoxerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="BoxerSurname" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="BoxerName" Type="nvarchar" MaxLength="50" Nullable="false" />
+          <Property Name="WinCount" Type="int" Nullable="false" />
+          <Property Name="LoseCount" Type="int" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Championship">
+          <Key>
+            <PropertyRef Name="ChampionshipId" />
+          </Key>
+          <Property Name="ChampionshipId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ChampionshipName" Type="nvarchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_Battles_Boxers">
+          <End Role="Boxers" Type="Self.Boxers" Multiplicity="1" />
+          <End Role="Battles" Type="Self.Battles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Boxers">
+              <PropertyRef Name="BoxerId" />
+            </Principal>
+            <Dependent Role="Battles">
+              <PropertyRef Name="Looser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Battles_Boxers1">
+          <End Role="Boxers" Type="Self.Boxers" Multiplicity="1" />
+          <End Role="Battles" Type="Self.Battles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Boxers">
+              <PropertyRef Name="BoxerId" />
+            </Principal>
+            <Dependent Role="Battles">
+              <PropertyRef Name="Winner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Battles_Championship">
+          <End Role="Championship" Type="Self.Championship" Multiplicity="1" />
+          <End Role="Battles" Type="Self.Battles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Championship">
+              <PropertyRef Name="ChampionshipId" />
+            </Principal>
+            <Dependent Role="Battles">
+              <PropertyRef Name="ChampionshipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Хранилище BoxChampionshipDBModelContainer">
+          <EntitySet Name="Battles" EntityType="Self.Battles" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Boxers" EntityType="Self.Boxers" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Championship" EntityType="Self.Championship" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_Battles_Boxers" Association="Self.FK_Battles_Boxers">
+            <End Role="Boxers" EntitySet="Boxers" />
+            <End Role="Battles" EntitySet="Battles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Battles_Boxers1" Association="Self.FK_Battles_Boxers1">
+            <End Role="Boxers" EntitySet="Boxers" />
+            <End Role="Battles" EntitySet="Battles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Battles_Championship" Association="Self.FK_Battles_Championship">
+            <End Role="Championship" EntitySet="Championship" />
+            <End Role="Battles" EntitySet="Battles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="BoxChampionshipDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Battles">
+          <Key>
+            <PropertyRef Name="BattleId" />
+          </Key>
+          <Property Name="BattleId" Type="Int32" Nullable="false" />
+          <Property Name="Winner" Type="Int32" Nullable="false" />
+          <Property Name="Looser" Type="Int32" Nullable="false" />
+          <Property Name="ChampionshipId" Type="Int32" Nullable="false" />
+          <Property Name="Rounds" Type="Int32" Nullable="false" />
+          <Property Name="DateTime" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="WinnerPoints" Type="Int32" Nullable="false" />
+          <Property Name="LooserPoints" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Boxers" Relationship="Self.FK_Battles_Boxers" FromRole="Battles" ToRole="Boxers" />
+          <NavigationProperty Name="Boxers1" Relationship="Self.FK_Battles_Boxers1" FromRole="Battles" ToRole="Boxers" />
+          <NavigationProperty Name="Championship" Relationship="Self.FK_Battles_Championship" FromRole="Battles" ToRole="Championship" />
+        </EntityType>
+        <EntityType Name="Boxers">
+          <Key>
+            <PropertyRef Name="BoxerId" />
+          </Key>
+          <Property Name="BoxerId" Type="Int32" Nullable="false" />
+          <Property Name="BoxerSurname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="BoxerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="WinCount" Type="Int32" Nullable="false" />
+          <Property Name="LoseCount" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="Battles" Relationship="Self.FK_Battles_Boxers" FromRole="Boxers" ToRole="Battles" />
+          <NavigationProperty Name="Battles1" Relationship="Self.FK_Battles_Boxers1" FromRole="Boxers" ToRole="Battles" />
+        </EntityType>
+        <EntityType Name="Championship">
+          <Key>
+            <PropertyRef Name="ChampionshipId" />
+          </Key>
+          <Property Name="ChampionshipId" Type="Int32" Nullable="false" />
+          <Property Name="ChampionshipName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <NavigationProperty Name="Battles" Relationship="Self.FK_Battles_Championship" FromRole="Championship" ToRole="Battles" />
+        </EntityType>
+        <Association Name="FK_Battles_Boxers">
+          <End Role="Boxers" Type="Self.Boxers" Multiplicity="1" />
+          <End Role="Battles" Type="Self.Battles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Boxers">
+              <PropertyRef Name="BoxerId" />
+            </Principal>
+            <Dependent Role="Battles">
+              <PropertyRef Name="Looser" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Battles_Boxers1">
+          <End Role="Boxers" Type="Self.Boxers" Multiplicity="1" />
+          <End Role="Battles" Type="Self.Battles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Boxers">
+              <PropertyRef Name="BoxerId" />
+            </Principal>
+            <Dependent Role="Battles">
+              <PropertyRef Name="Winner" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Battles_Championship">
+          <End Role="Championship" Type="Self.Championship" Multiplicity="1" />
+          <End Role="Battles" Type="Self.Battles" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Championship">
+              <PropertyRef Name="ChampionshipId" />
+            </Principal>
+            <Dependent Role="Battles">
+              <PropertyRef Name="ChampionshipId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="BoxChampionshipDBEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Battles" EntityType="Self.Battles" />
+          <EntitySet Name="Boxers" EntityType="Self.Boxers" />
+          <EntitySet Name="Championship" EntityType="Self.Championship" />
+          <AssociationSet Name="FK_Battles_Boxers" Association="Self.FK_Battles_Boxers">
+            <End Role="Boxers" EntitySet="Boxers" />
+            <End Role="Battles" EntitySet="Battles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Battles_Boxers1" Association="Self.FK_Battles_Boxers1">
+            <End Role="Boxers" EntitySet="Boxers" />
+            <End Role="Battles" EntitySet="Battles" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Battles_Championship" Association="Self.FK_Battles_Championship">
+            <End Role="Championship" EntitySet="Championship" />
+            <End Role="Battles" EntitySet="Battles" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="Хранилище BoxChampionshipDBModelContainer" CdmEntityContainer="BoxChampionshipDBEntities">
+          <EntitySetMapping Name="Battles">
+            <EntityTypeMapping TypeName="BoxChampionshipDBModel.Battles">
+              <MappingFragment StoreEntitySet="Battles">
+                <ScalarProperty Name="BattleId" ColumnName="BattleId" />
+                <ScalarProperty Name="Winner" ColumnName="Winner" />
+                <ScalarProperty Name="Looser" ColumnName="Looser" />
+                <ScalarProperty Name="ChampionshipId" ColumnName="ChampionshipId" />
+                <ScalarProperty Name="Rounds" ColumnName="Rounds" />
+                <ScalarProperty Name="DateTime" ColumnName="DateTime" />
+                <ScalarProperty Name="WinnerPoints" ColumnName="WinnerPoints" />
+                <ScalarProperty Name="LooserPoints" ColumnName="LooserPoints" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Boxers">
+            <EntityTypeMapping TypeName="BoxChampionshipDBModel.Boxers">
+              <MappingFragment StoreEntitySet="Boxers">
+                <ScalarProperty Name="BoxerId" ColumnName="BoxerId" />
+                <ScalarProperty Name="BoxerSurname" ColumnName="BoxerSurname" />
+                <ScalarProperty Name="BoxerName" ColumnName="BoxerName" />
+                <ScalarProperty Name="WinCount" ColumnName="WinCount" />
+                <ScalarProperty Name="LoseCount" ColumnName="LoseCount" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Championship">
+            <EntityTypeMapping TypeName="BoxChampionshipDBModel.Championship">
+              <MappingFragment StoreEntitySet="Championship">
+                <ScalarProperty Name="ChampionshipId" ColumnName="ChampionshipId" />
+                <ScalarProperty Name="ChampionshipName" ColumnName="ChampionshipName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="Нет" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -1,0 +1,104 @@
+﻿
+@model BoxChampionship.ViewModels.ChampionshipTable
+
+@{
+    ViewBag.Title = "Championship Ratio";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="ranking-filters">
+    <div>
+        <label for="championshipDropdown">Choose Championship:</label>
+        @Html.DropDownList("championshipDropdown", Model.ChampionshipList, new { @class = "championship-select" })
+    </div>
+    <div>
+        <label for="boxerFilter">Filter by boxer:</label>
+        @Html.TextBox("boxerFilter", null, new { @class = "boxer-filter-input" })
+    </div>
+    <button id="loadRankingsButton" class="load-button">Download Rankings</button>
+</div>
+
+<table id="rankingsGrid"></table>
+<div id="rankingsPager"></div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var grid = $("#rankingsGrid").jqGrid({
+
+            datatype: "local",
+
+            colNames: ['Boxer', 'Wins', 'Losses', 'TotalGames', 'WinRate'],
+
+            colModel: [
+                { name: 'BoxerName', width: 200 },
+                { name: 'Wins', width: 80, align: 'center', sorttype: 'int' },
+                { name: 'Losses', width: 80, align: 'center', sorttype: 'int' },
+                { name: 'TotalGames', width: 90, align: 'center', sorttype: 'int' },
+                {
+                    name: 'WinRatio',
+                    width: 120,
+                    align: 'center',
+                    sorttype: 'float',
+                    sortname: 'WinRatio',
+                    sortorder: 'desc',
+                    formatter: function (cellvalue, options, rowObject) {
+                        return (cellvalue * 100).toFixed(1) + '%';
+                    }
+                }
+            ],
+
+            pager: '#rankingsPager',
+            rowNum: 10,
+            rowList: [10, 20, 50],
+            viewrecords: true,
+
+            onSortCol: function (index, iCol, sortorder) {
+                grid.jqGrid('setGridParam', {
+                    postData: { sidx: index, sord: sortorder }
+                }).trigger("reloadGrid");
+            },
+
+            autowidth: true,
+
+            height: 'auto',
+            caption: "Boxers Ratings (Choose championship and press Download)"
+        });
+
+        $(window).on('resize.jqGrid', function () {
+
+            grid.jqGrid('setGridWidth', null, true);
+        });
+
+
+        $("#loadRankingsButton").on("click", function () {
+
+            var champId = $("#championshipDropdown").val();
+            var boxerName = $("#boxerFilter").val();
+
+            if (!champId) {
+
+                console.warn("Please, choose Championship first.");
+                return;
+            }
+
+            grid.jqGrid('setGridParam', {
+                url: '@Url.Action("GetData", "Championship")',
+                datatype: "json",
+                postData: {
+                    championshipId: champId,
+                    boxerFilter: boxerName
+                },
+                page: 1
+            });
+
+            grid.trigger("reloadGrid");
+        });
+
+    });
+    </script>
+}
+

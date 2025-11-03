@@ -1,0 +1,125 @@
+﻿@model BoxChampionship.ViewModels.BattlesAdd
+
+@{
+    ViewData["Title"] = "Battles";
+}
+@using (Html.BeginForm("Index", "Battles", FormMethod.Post, new { @class = "battlesForm" }))
+{
+    @Html.AntiForgeryToken()
+    if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert-success">@TempData["SuccessMessage"]</div>
+    }
+    <div class="inputFormMiddle"><h1>Add New Battle</h1></div>
+
+    <div class="inputFormMiddle">
+        <div class="inputFormColumn">
+
+            <div class="form-group">
+
+                <div class="inputForm">
+                    @Html.LabelFor(m => m.Boxer1_Name)
+                    @Html.EditorFor(m => m.Boxer1_Name)
+                </div>
+
+                <div class="validation-wrapper">
+                    @Html.ValidationMessageFor(m => m.Boxer1_Name)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="inputForm">
+                    @Html.LabelFor(m => m.Boxer1_Surname)
+                    @Html.EditorFor(m => m.Boxer1_Surname)
+                </div>
+                <div class="validation-wrapper">
+                    @Html.ValidationMessageFor(m => m.Boxer1_Surname)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="inputForm">
+                    @Html.LabelFor(m => m.Boxer1_Score)
+                    @Html.EditorFor(m => m.Boxer1_Score)
+                </div>
+                <div class="validation-wrapper">
+                    @Html.ValidationMessageFor(m => m.Boxer1_Score)
+                </div>
+            </div>
+        </div>
+
+        <div class="inputFormColumn">
+
+
+            <div class="form-group">
+                <div class="inputForm">
+                    @Html.LabelFor(m => m.Boxer2_Name)
+                    @Html.EditorFor(m => m.Boxer2_Name)
+                </div>
+                <div class="validation-wrapper">
+                    @Html.ValidationMessageFor(m => m.Boxer2_Name)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="inputForm">
+                    @Html.LabelFor(m => m.Boxer2_Surname)
+                    @Html.EditorFor(m => m.Boxer2_Surname)
+                </div>
+                <div class="validation-wrapper">
+                    @Html.ValidationMessageFor(m => m.Boxer2_Surname)
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="inputForm">
+                    @Html.LabelFor(m => m.Boxer2_Score)
+                    @Html.EditorFor(m => m.Boxer2_Score)
+                </div>
+                <div class="validation-wrapper">
+                    @Html.ValidationMessageFor(m => m.Boxer2_Score)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="inputFormMiddle">
+        <div class="iForm">
+
+            <div class="form-group left">
+                <div class="inputForm">
+                    @Html.LabelFor(m => m.Rounds)
+                    @Html.EditorFor(m => m.Rounds)
+                </div>
+                <div class="validation-wrapper">
+                    @Html.ValidationMessageFor(m => m.Rounds)
+                </div>
+            </div>
+
+            <div class="form-group right">
+                <div class="inputForm">
+                    @Html.LabelFor(m => m.DateTime)
+                    @Html.TextBoxFor(m => m.DateTime, new { @type = "datetime-local" })
+                </div>
+                <div class="validation-wrapper">
+                    @Html.ValidationMessageFor(m => m.DateTime)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group championship-row">
+        <div class="inputForm">
+            @Html.LabelFor(m => m.Championship)
+            @Html.EditorFor(m => m.Championship)
+        </div>
+        <div class="validation-wrapper">
+            @Html.ValidationMessageFor(m => m.Championship)
+        </div>
+    </div>
+
+    <div class="inputFormMiddle">
+        <input type="submit" value="confirm">
+    </div>
+}
+

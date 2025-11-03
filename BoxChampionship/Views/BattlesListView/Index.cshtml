@@ -1,0 +1,97 @@
+﻿
+@model BoxChampionship.ViewModels.BattlesList
+
+@{
+    ViewBag.Title = "Список Боїв";
+}
+
+<h2>@ViewBag.Title</h2>
+
+<div class="ranking-filters">
+    <div>
+        <label for="boxerDropdown">Filter by boxer (Name/Surname):</label>
+        @Html.DropDownList("boxerDropdown", Model.BoxersList, new { @class = "championship-select" })
+    </div>
+    <div id="winLossFilterGroup" style="margin-top: 25px;">
+        <label><input type="radio" name="winLossFilter" value="all" checked="checked" /> All</label>
+        <label><input type="radio" name="winLossFilter" value="winner" /> Only win</label>
+        <label><input type="radio" name="winLossFilter" value="loser" /> Only lose</label>
+    </div>
+
+    <button id="loadBattlesButton" class="load-button">DownloadBattles</button>
+</div>
+
+<table id="battlesGrid"></table>
+<div id="battlesPager"></div>
+
+@section Scripts {
+    <script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var grid = $("#battlesGrid").jqGrid({
+
+            datatype: "local", 
+
+            colNames: ['Id', 'Winner', 'Loser', 'Rounds', 'Score', 'Date'],
+
+            colModel: [
+               
+                { name: 'Id', key: true, width: 50 },
+                { name: 'WinnerName', width: 200 },
+                { name: 'LoserName', width: 200 },
+                { name: 'RoundsCount', width: 80, align: 'center' },
+                { name: 'Score', width: 100, align: 'center', sortable: false },
+                {
+                    name: 'DateTime',
+                    width: 150,
+                    sorttype: 'date',
+                    formatter: 'date',
+                    formatoptions: { newformat: 'd.m.Y H:i' } 
+                }
+            ],
+
+            pager: '#battlesPager',
+            rowNum: 10,
+            rowList: [10, 20, 50],
+            viewrecords: true,
+          
+            onSortCol: function (index, iCol, sortorder) {
+                grid.jqGrid('setGridParam', {
+                    postData: { sidx: index, sord: sortorder }
+                }).trigger("reloadGrid");
+            },
+
+            autowidth: true,
+            height: 'auto',
+            caption: "Список всіх боїв"
+        });
+
+        $("#loadBattlesButton").on("click", function () {
+
+            console.log("Кнопку 'loadBattlesButton' натиснуто!");
+ 
+            var boxerName = $("#boxerDropdown").val();
+            
+            var winLoss = $("input[name='winLossFilter']:checked").val();
+
+            grid.jqGrid('setGridParam', {
+            
+                url: '@Url.Action("GetData", "BattlesListView")',
+                datatype: "json",
+            
+                postData: {
+                   
+                    boxerNameFilter: boxerName,
+                    winLossFilter: winLoss
+                },
+                page: 1
+            });
+
+            grid.trigger("reloadGrid");
+        });
+
+    });
+    </script>
+}
+
