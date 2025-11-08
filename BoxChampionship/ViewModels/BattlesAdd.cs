@@ -12,6 +12,7 @@ namespace BoxChampionship.ViewModels
         [Required(ErrorMessage = "Please specify the date and time of the fight")]
         [DataType(DataType.DateTime)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm}", ApplyFormatInEditMode = true)]
+        [PastOrCurrentDate(ErrorMessage = "Battles Date cant be in future!")]
         public DateTime DateTime { get; set; }
 
         [Required(ErrorMessage = "Please specify the number of rounds")]

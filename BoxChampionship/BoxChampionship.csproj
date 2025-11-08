@@ -132,6 +132,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\BattlesController.cs" />
+    <Compile Include="Services\PastOrCurrentDateAttribute.cs" />
     <Compile Include="ViewModels\BattlesList.cs" />
     <Compile Include="ViewModels\BoxerRanking.cs" />
     <Compile Include="Controllers\ChampionshipController.cs" />

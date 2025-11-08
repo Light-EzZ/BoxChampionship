@@ -24,7 +24,9 @@ namespace BoxChampionship.Controllers
             }
             else if (vm.Boxer1_Score == vm.Boxer2_Score)
             {
+                TempData["PointsErrorMessage"] = "The count of points cant be same";
                 return View(vm);
+                
             }
             else
             {

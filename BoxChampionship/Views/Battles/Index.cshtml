@@ -1,5 +1,8 @@
 ﻿@model BoxChampionship.ViewModels.BattlesAdd
+@{
 
+    string maxDate = DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+}
 @{
     ViewData["Title"] = "Battles";
 }
@@ -9,6 +12,10 @@
     if (TempData["SuccessMessage"] != null)
     {
         <div class="alert-success">@TempData["SuccessMessage"]</div>
+    }
+    if (TempData["PointsErrorMessage"] != null)
+    {
+        <div class="alert-warning">@TempData["PointsErrorMessage"]</div>
     }
     <div class="inputFormMiddle"><h1>Add New Battle</h1></div>
 
@@ -99,7 +106,11 @@
             <div class="form-group right">
                 <div class="inputForm">
                     @Html.LabelFor(m => m.DateTime)
-                    @Html.TextBoxFor(m => m.DateTime, new { @type = "datetime-local" })
+                    @Html.TextBoxFor(m => m.DateTime, new
+                    {
+                        @type = "datetime-local",
+                        @max = maxDate
+                    })
                 </div>
                 <div class="validation-wrapper">
                     @Html.ValidationMessageFor(m => m.DateTime)
