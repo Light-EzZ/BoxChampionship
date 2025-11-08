@@ -37,66 +37,55 @@ namespace BoxChampionship.Services
         {
             using (var db = new BoxChampionshipDBEntities())
             {
-                // Отримання даних
-                var battlesQuery = db.Battles
-                    .Include("Boxers")      
-                    .Include("Boxers1")     
-                    .Where(b => b.ChampionshipId == championshipId);
+                var rankingsQuery = db.Boxers
+                    .Where(b => b.Battles1.Any(bt => bt.ChampionshipId == championshipId) ||
+                                b.Battles.Any(bt => bt.ChampionshipId == championshipId))
 
-                var allBattlesList = battlesQuery.ToList();
-
-                //  Збираємо учасників для рахування статистики
-                var winners = allBattlesList.Select(b => new {
-                    BoxerObject = b.Boxers1, // Переможець
-                    IsWinner = true
-                });
-                var losers = allBattlesList.Select(b => new {
-                    BoxerObject = b.Boxers, // Програвший
-                    IsWinner = false
-                });
-                var allParticipants = winners.Concat(losers);
-
-                // Групуємо та Рахуємо Статистику 
-
-                var rankingsQuery = allParticipants
-                    .GroupBy(p => p.BoxerObject.BoxerId) 
-                    .Select(g => new BoxerRanking 
+                    
+                    .Select(b => new
                     {
-                        BoxerId = g.Key,
-                        BoxerName = g.First().BoxerObject.BoxerName + " " + g.First().BoxerObject.BoxerSurname,
-                        TotalGames = g.Count(),
-                        Wins = g.Count(match => match.IsWinner == true),
-                        Losses = g.Count(match => match.IsWinner == false),
-                        WinRatio = (g.Count() > 0)
-                            ? (double)g.Count(match => match.IsWinner == true) / g.Count()
-                            : 0
+                        BoxerId = b.BoxerId,
+                        BoxerName = b.BoxerName + " " + b.BoxerSurname,
+                        Wins = b.Battles1.Count(bt => bt.ChampionshipId == championshipId),
+                        Losses = b.Battles.Count(bt => bt.ChampionshipId == championshipId)
+                    })
+
+                
+                    .Select(r => new BoxerRanking
+                    {
+                        BoxerId = r.BoxerId,
+                        BoxerName = r.BoxerName,
+                        Wins = r.Wins,
+                        Losses = r.Losses,
+                        TotalGames = r.Wins + r.Losses,
+                        WinRatio = (r.Wins + r.Losses) > 0 ? (double)r.Wins / (r.Wins + r.Losses) : 0
                     });
 
-                //  Фільтрація за іменем
+                //  Фільтрація за іменем 
                 if (!string.IsNullOrEmpty(boxerFilter))
                 {
+                   
                     rankingsQuery = rankingsQuery.Where(r =>
                         r.BoxerName.IndexOf(boxerFilter, StringComparison.OrdinalIgnoreCase) >= 0
                     );
                 }
 
+                
                 int totalRecords = rankingsQuery.Count(); 
                 bool isDescending = (sord ?? "").Equals("desc", StringComparison.OrdinalIgnoreCase);
 
+                //Сортування 
                 if (string.IsNullOrEmpty(sidx))
                 {
-                    // сортування за замовчуванням
                     rankingsQuery = rankingsQuery
-                        .OrderByDescending(r => r.WinRatio)
-                        .ThenBy(r => r.Losses);
+                       .OrderByDescending(r => r.WinRatio)
+                       .ThenBy(r => r.Losses);
                 }
                 else
                 {
-                    // Динамічне сортування котре по кнопкам в таблиці
                     switch (sidx)
                     {
                         case "BoxerName":
-                            
                             rankingsQuery = isDescending ? rankingsQuery.OrderByDescending(r => r.BoxerName) : rankingsQuery.OrderBy(r => r.BoxerName);
                             break;
                         case "Wins":
@@ -115,13 +104,13 @@ namespace BoxChampionship.Services
                     }
                 }
 
-                //  Пагінація 
+                //  Пагінація
                 var pagedData = rankingsQuery
                     .Skip((page - 1) * rows)
                     .Take(rows)
                     .ToList();
 
-                //  Формування JSON 
+                //  Формування JSON
                 var jsonData = new
                 {
                     total = (int)Math.Ceiling((double)totalRecords / rows),
@@ -132,9 +121,8 @@ namespace BoxChampionship.Services
 
                 return jsonData;
             }
-           
         }
 
-      
+
     }
 }

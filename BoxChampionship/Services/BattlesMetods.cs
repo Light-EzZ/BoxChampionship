@@ -56,9 +56,7 @@ namespace BoxChampionship.Services
                     LooserPoints = boxer2_Score
                 };
 
-
                 db.Battles.Add(newBattle);
-
 
                 db.SaveChanges();
             }
@@ -86,83 +84,57 @@ namespace BoxChampionship.Services
                     db.SaveChanges();
                     return newChamp.ChampionshipId;
                 }
-                    
-                    
+                                      
             }
         }
 
-        public static void LoseAdd(int id2)  //Калькулятор поразок
-        {
-            using (var db = new BoxChampionshipDBEntities())
-            {
-                Boxers boxer = db.Boxers.FirstOrDefault(c => c.BoxerId == id2);
-             
-                {
-                    boxer.LoseCount++;
-                };
 
-                db.SaveChanges();
-            }
-        }
 
-        public static void WinAdd(int id1)//Калькулятор перемог
-        {
-            using (var db = new BoxChampionshipDBEntities())
-            {
-                Boxers boxer = db.Boxers.FirstOrDefault(c => c.BoxerId == id1);
-
-                {
-                    boxer.WinCount++;
-                }
-                ;
-
-                db.SaveChanges();
-            }
-        }
-
-        public static object GetContainer() //Список боксерів
+        public static object GetContainer()
         {
             var vm = new BattlesList();
-
-            // Готуємо список для випадаючого меню
             using (var db = new BoxChampionshipDBEntities())
             {
-                var champsFromDb = db.Boxers.ToList();
-
-                var tempList = champsFromDb.Select(c => new SelectListItem
-                {
-                    Text = c.BoxerName + " " + c.BoxerSurname,
-                    Value = c.BoxerName + " " + c.BoxerSurname 
-                }).ToList();
-
+             
+                var tempList = db.Boxers
+                    .OrderBy(b => b.BoxerName)
+                    .ThenBy(b => b.BoxerSurname)
+                    .Select(c => new
+                    {
+                        FullName = c.BoxerName + " " + c.BoxerSurname
+                    })
+                    .ToList() 
+                    .Select(c => new SelectListItem
+                    {
+                        Text = c.FullName,
+                        Value = c.FullName
+                    }).ToList();
                 tempList.Insert(0, new SelectListItem { Text = "--- Choose Boxer ---", Value = "" });
                 vm.BoxersList = tempList;
             }
             return vm;
         }
+            
         [HttpGet]
-        public static object GetRankingsData(string sidx, string sord, int page, int rows, string winLossFilter,string boxerNameFilter) //Дані для таблиці всіх матчів
+        
+        public static object GetRankingsData(string sidx, string sord, int page, int rows, string winLossFilter, string boxerNameFilter) //Дані для таблиці всіх матчів
         {
-
             using (var db = new BoxChampionshipDBEntities())
             {
-                // Підтягуємо бої 
+                
                 var battlesQuery = db.Battles
-                    .Include("Boxers")      
-                    .Include("Boxers1")    
-                    .AsQueryable(); 
-       
-                var allBattlesList = battlesQuery.ToList();
+                        .Include("Boxers")
+                        .Include("Boxers1")  
+                        .AsQueryable();
 
-                IEnumerable<Battles> filteredBattles = allBattlesList;
+          
 
                 // Фільтр по імені
                 if (!string.IsNullOrEmpty(boxerNameFilter))
                 {
-
-                    filteredBattles = filteredBattles.Where(b =>
-                        (b.Boxers1 != null && (b.Boxers1.BoxerName.Trim() + " " + b.Boxers1.BoxerSurname.Trim()).Equals(boxerNameFilter, StringComparison.OrdinalIgnoreCase)) || // Переможець
-                        (b.Boxers != null && (b.Boxers.BoxerName.Trim() + " " + b.Boxers.BoxerSurname.Trim()).Equals(boxerNameFilter, StringComparison.OrdinalIgnoreCase))    // Програвший
+                    battlesQuery = battlesQuery.Where(b =>
+                        (b.Boxers1 != null && (b.Boxers1.BoxerName + " " + b.Boxers1.BoxerSurname).Equals(boxerNameFilter, StringComparison.OrdinalIgnoreCase)) || 
+                        (b.Boxers != null && (b.Boxers.BoxerName + " " + b.Boxers.BoxerSurname).Equals(boxerNameFilter, StringComparison.OrdinalIgnoreCase))    
                     );
                 }
 
@@ -171,33 +143,32 @@ namespace BoxChampionship.Services
                 {
                     if (winLossFilter == "winner")
                     {
-                        filteredBattles = filteredBattles.Where(b =>
-                            (b.Boxers1 != null && (b.Boxers1.BoxerName.Trim() + " " + b.Boxers1.BoxerSurname.Trim()).Equals(boxerNameFilter, StringComparison.OrdinalIgnoreCase))
+                        battlesQuery = battlesQuery.Where(b =>
+                            (b.Boxers1 != null && (b.Boxers1.BoxerName + " " + b.Boxers1.BoxerSurname).Equals(boxerNameFilter, StringComparison.OrdinalIgnoreCase))
                         );
                     }
                     else if (winLossFilter == "loser")
                     {
-                        filteredBattles = filteredBattles.Where(b =>
-                            (b.Boxers != null && (b.Boxers.BoxerName.Trim() + " " + b.Boxers.BoxerSurname.Trim()).Equals(boxerNameFilter, StringComparison.OrdinalIgnoreCase))
+                        battlesQuery = battlesQuery.Where(b =>
+                            (b.Boxers != null && (b.Boxers.BoxerName + " " + b.Boxers.BoxerSurname).Equals(boxerNameFilter, StringComparison.OrdinalIgnoreCase))
                         );
                     }
                 }
 
-                // Відфільтрований список ==> ViewModel
-                var rowQuery = filteredBattles.Select(g => new BattlesList
+                var rowQuery = battlesQuery.Select(g => new BattlesList
                 {
                     Id = g.BattleId,
                     WinnerName = (g.Boxers1 != null) ? (g.Boxers1.BoxerName + " " + g.Boxers1.BoxerSurname) : "N/A",
                     LoserName = (g.Boxers != null) ? (g.Boxers.BoxerName + " " + g.Boxers.BoxerSurname) : "N/A",
-                    RoundsCount = g.Rounds,
-                    Score = g.WinnerPoints + ":" + g.LooserPoints,
                     DateTime = g.DateTime
                 });
 
-                // Динамічне Сортування, Пагінація, JSON 
+   
                 int totalRecords = rowQuery.Count();
+
+                //  сортування
                 bool isDescending = (sord ?? "").Equals("desc", StringComparison.OrdinalIgnoreCase);
-                
+
                 if (string.IsNullOrEmpty(sidx))
                 {
                     rowQuery = rowQuery.OrderByDescending(r => r.DateTime);
@@ -212,12 +183,6 @@ namespace BoxChampionship.Services
                         case "LoserName":
                             rowQuery = isDescending ? rowQuery.OrderByDescending(r => r.LoserName) : rowQuery.OrderBy(r => r.LoserName);
                             break;
-                        case "RoundsCount":
-                            rowQuery = isDescending ? rowQuery.OrderByDescending(r => r.RoundsCount) : rowQuery.OrderBy(r => r.RoundsCount);
-                            break;
-                        case "Score":
-                            rowQuery = isDescending ? rowQuery.OrderByDescending(r => r.Score) : rowQuery.OrderBy(r => r.Score);
-                            break;
                         case "DateTime":
                             rowQuery = isDescending ? rowQuery.OrderByDescending(r => r.DateTime) : rowQuery.OrderBy(r => r.DateTime);
                             break;
@@ -227,11 +192,13 @@ namespace BoxChampionship.Services
                     }
                 }
 
+                // Пагінація
                 var pagedData = rowQuery
                     .Skip((page - 1) * rows)
                     .Take(rows)
-                    .ToList();
+                    .ToList(); 
 
+                //  JSON
                 var jsonData = new
                 {
                     total = (int)Math.Ceiling((double)totalRecords / rows),
@@ -240,6 +207,35 @@ namespace BoxChampionship.Services
                     rows = pagedData
                 };
                 return jsonData;
+            }
+        }
+        public static object GetSingleBattleDetails(int id)
+        {
+            using (var db = new BoxChampionshipDBEntities())
+            {
+                var battle = db.Battles
+                               .Include("Boxers")  
+                               .Include("Boxers1")
+                               .Include("Championship")
+                               .FirstOrDefault(b => b.BattleId == id);
+
+                if (battle == null)
+                {
+                    return null;
+                }
+
+              
+                var result = new
+                {
+                    Id = battle.BattleId,
+                    WinnerName = (battle.Boxers1 != null) ? (battle.Boxers1.BoxerName + " " + battle.Boxers1.BoxerSurname) : "N/A",
+                    LoserName = (battle.Boxers != null) ? (battle.Boxers.BoxerName + " " + battle.Boxers.BoxerSurname) : "N/A",
+                    RoundsCount = battle.Rounds,
+                    Score = battle.WinnerPoints + ":" + battle.LooserPoints,
+                    DateTime = battle.DateTime,
+                    ChampionshipName = (battle.Championship != null) ? battle.Championship.ChampionshipName : "N/A"
+                };
+                return result;
             }
         }
     }

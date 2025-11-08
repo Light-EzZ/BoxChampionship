@@ -24,8 +24,6 @@ namespace BoxChampionship.Models
         public int BoxerId { get; set; }
         public string BoxerSurname { get; set; }
         public string BoxerName { get; set; }
-        public int WinCount { get; set; }
-        public int LoseCount { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Battles> Battles { get; set; }

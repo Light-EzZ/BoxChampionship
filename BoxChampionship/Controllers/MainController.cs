@@ -20,7 +20,12 @@ namespace BoxChampionship.Controllers
             object dataFromService = Services.BattlesMetods.GetRankingsData(sidx, sord, page, rows, winLossFilter, boxerNameFilter);
             return Json(dataFromService, JsonRequestBehavior.AllowGet);
         }
-
+        [HttpGet]
+        public JsonResult GetBattleDetails(int id)
+        {
+            var battleDetails = Services.BattlesMetods.GetSingleBattleDetails(id);
+            return Json(battleDetails, JsonRequestBehavior.AllowGet);
+        }
 
     }
 }

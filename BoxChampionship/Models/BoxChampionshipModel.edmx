@@ -25,8 +25,6 @@
           <Property Name="BoxerId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="BoxerSurname" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="BoxerName" Type="nvarchar" MaxLength="50" Nullable="false" />
-          <Property Name="WinCount" Type="int" Nullable="false" />
-          <Property Name="LoseCount" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="Championship">
           <Key>
@@ -115,8 +113,6 @@
           <Property Name="BoxerId" Type="Int32" Nullable="false" />
           <Property Name="BoxerSurname" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="BoxerName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="WinCount" Type="Int32" Nullable="false" />
-          <Property Name="LoseCount" Type="Int32" Nullable="false" />
           <NavigationProperty Name="Battles" Relationship="Self.FK_Battles_Boxers" FromRole="Boxers" ToRole="Battles" />
           <NavigationProperty Name="Battles1" Relationship="Self.FK_Battles_Boxers1" FromRole="Boxers" ToRole="Battles" />
         </EntityType>
@@ -207,9 +203,7 @@
                 <ScalarProperty Name="BoxerId" ColumnName="BoxerId" />
                 <ScalarProperty Name="BoxerSurname" ColumnName="BoxerSurname" />
                 <ScalarProperty Name="BoxerName" ColumnName="BoxerName" />
-                <ScalarProperty Name="WinCount" ColumnName="WinCount" />
-                <ScalarProperty Name="LoseCount" ColumnName="LoseCount" />
-              </MappingFragment>
+                </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Championship">

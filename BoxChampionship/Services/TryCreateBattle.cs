@@ -19,14 +19,12 @@ namespace BoxChampionship.Services
             id2 = BattlesMetods.AddOrCreate(vm.Boxer2_Name, vm.Boxer2_Surname);
             if (vm.Boxer1_Score > vm.Boxer2_Score)
             {
-                BattlesMetods.WinAdd(id1);
-                BattlesMetods.LoseAdd(id2);
+                
                 BattlesMetods.CreateBattle(id1, id2, championshipID, vm.Rounds, vm.DateTime, vm.Boxer1_Score, vm.Boxer2_Score);
             }
             else
             {
-                BattlesMetods.WinAdd(id2);
-                BattlesMetods.LoseAdd(id1);
+                
                 BattlesMetods.CreateBattle(id2, id1, championshipID, vm.Rounds, vm.DateTime, vm.Boxer2_Score, vm.Boxer1_Score);
             }
             

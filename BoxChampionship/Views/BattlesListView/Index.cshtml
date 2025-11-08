@@ -1,5 +1,4 @@
-﻿
-@model BoxChampionship.ViewModels.BattlesList
+﻿@model BoxChampionship.ViewModels.BattlesList
 
 @{
     ViewBag.Title = "Список Боїв";
@@ -24,74 +23,130 @@
 <table id="battlesGrid"></table>
 <div id="battlesPager"></div>
 
+<div id="battleDetailModal" title="Battle Details" style="display:none;">
+    <p><strong>Championship:</strong> <span id="detailChampionship"></span></p>
+    <p><strong>Date:</strong> <span id="detailDate"></span></p>
+    <p><strong>Winner:</strong> <span id="detailWinner"></span></p>
+    <p><strong>Loser:</strong> <span id="detailLoser"></span></p>
+    <p><strong>Rounds:</strong> <span id="detailRounds"></span></p>
+    <p><strong>Score:</strong> <span id="detailScore"></span></p>
+</div>
+
+
 @section Scripts {
     <script type="text/javascript">
 
-    $(document).ready(function () {
+        function showDetails(battleId) {
+            $.ajax({
+                url: '@Url.Action("GetBattleDetails", "BattlesListView")',
+                type: 'GET',
+                data: { id: battleId },
+                success: function (data) {
+                    if (data) {
+                        var date = new Date(parseInt(data.DateTime.substr(6)));
+                        var formattedDate = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
 
-        var grid = $("#battlesGrid").jqGrid({
+                        $("#detailChampionship").text(data.ChampionshipName);
+                        $("#detailDate").text(formattedDate);
+                        $("#detailWinner").text(data.WinnerName);
+                        $("#detailLoser").text(data.LoserName);
+                        $("#detailRounds").text(data.RoundsCount);
+                        $("#detailScore").text(data.Score);
 
-            datatype: "local", 
-
-            colNames: ['Id', 'Winner', 'Loser', 'Rounds', 'Score', 'Date'],
-
-            colModel: [
-               
-                { name: 'Id', key: true, width: 50 },
-                { name: 'WinnerName', width: 200 },
-                { name: 'LoserName', width: 200 },
-                { name: 'RoundsCount', width: 80, align: 'center' },
-                { name: 'Score', width: 100, align: 'center', sortable: false },
-                {
-                    name: 'DateTime',
-                    width: 150,
-                    sorttype: 'date',
-                    formatter: 'date',
-                    formatoptions: { newformat: 'd.m.Y H:i' } 
-                }
-            ],
-
-            pager: '#battlesPager',
-            rowNum: 10,
-            rowList: [10, 20, 50],
-            viewrecords: true,
-          
-            onSortCol: function (index, iCol, sortorder) {
-                grid.jqGrid('setGridParam', {
-                    postData: { sidx: index, sord: sortorder }
-                }).trigger("reloadGrid");
-            },
-
-            autowidth: true,
-            height: 'auto',
-            caption: "Список всіх боїв"
-        });
-
-        $("#loadBattlesButton").on("click", function () {
-
-            console.log("Кнопку 'loadBattlesButton' натиснуто!");
- 
-            var boxerName = $("#boxerDropdown").val();
-            
-            var winLoss = $("input[name='winLossFilter']:checked").val();
-
-            grid.jqGrid('setGridParam', {
-            
-                url: '@Url.Action("GetData", "BattlesListView")',
-                datatype: "json",
-            
-                postData: {
-                   
-                    boxerNameFilter: boxerName,
-                    winLossFilter: winLoss
+                        $("#battleDetailModal").dialog("open");
+                    } else {
+                        alert("Error: Battle not found.");
+                    }
                 },
-                page: 1
+                error: function () {
+                    alert("Error connecting to server.");
+                }
+            });
+        }
+        // ф-ція створення рядка для кнопки 
+        function createDetailButton(cellvalue, options, rowObject) {
+
+            return '<button class="detail-button" onclick="showDetails(' + rowObject.Id + ')">View Details</button>';
+        }
+
+
+        $(document).ready(function () {
+
+            $("#battleDetailModal").dialog({
+                autoOpen: false,
+                modal: true,
+                width: 400,
+                buttons: {
+                    "Close": function () {
+                        $(this).dialog("close");
+                    }
+                }
             });
 
-            grid.trigger("reloadGrid");
-        });
+            var grid = $("#battlesGrid").jqGrid({
 
-    });
+                datatype: "local", 
+                colNames: ['Id', 'Winner', 'Loser', 'Date', 'Details'],
+                colModel: [
+
+                    { name: 'Id', key: true, width: 50, hidden: true },
+                    { name: 'WinnerName', width: 200 },
+                    { name: 'LoserName', width: 200 },
+                    {
+                        name: 'DateTime',
+                        width: 150,
+                        sorttype: 'date',
+                        formatter: 'date',
+                        formatoptions: { newformat: 'd.m.Y H:i' }
+                    },
+                    // новий рядок для кнопки
+                    {
+                        name: 'actions',
+                        width: 100,
+                        align: 'center',
+                        sortable: false,
+                        search: false,
+                        formatter: createDetailButton 
+                    }
+                ],
+                pager: '#battlesPager',
+                rowNum: 10,
+                rowList: [10, 20, 50],
+                viewrecords: true,
+
+                onSortCol: function (index, iCol, sortorder) {
+                    grid.jqGrid('setGridParam', {
+                        postData: { sidx: index, sord: sortorder }
+                    }).trigger("reloadGrid");
+                },
+
+                autowidth: true,
+                height: 'auto',
+                caption: "Список всіх боїв"
+            });
+
+            $("#loadBattlesButton").on("click", function () {
+
+                console.log("Кнопку 'loadBattlesButton' натиснуто!");
+
+                var boxerName = $("#boxerDropdown").val();
+                var winLoss = $("input[name='winLossFilter']:checked").val();
+
+                grid.jqGrid('setGridParam', {
+
+                    url: '@Url.Action("GetData", "BattlesListView")',
+                    datatype: "json", 
+
+                    postData: {
+                        boxerNameFilter: boxerName,
+                        winLossFilter: winLoss
+                    },
+                    page: 1 
+                });
+
+                grid.trigger("reloadGrid");
+            });
+
+        });
     </script>
 }
-
