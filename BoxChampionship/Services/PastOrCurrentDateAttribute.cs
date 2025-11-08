@@ -6,7 +6,7 @@ public class PastOrCurrentDateAttribute : ValidationAttribute
     public PastOrCurrentDateAttribute()
     {
         
-        ErrorMessage = "Выбранная дата не может быть в будущем.";
+        ErrorMessage = "Selected date cannot be in the future";
     }
 
     public override bool IsValid(object value)
